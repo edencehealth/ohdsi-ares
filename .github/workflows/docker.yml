@@ -13,4 +13,5 @@ jobs:
     uses: edencehealth/workflows/.github/workflows/dockerimage.yml@v1
     with:
       container_name: ohdsi-ares
+      platforms: linux/amd64
     secrets: inherit
