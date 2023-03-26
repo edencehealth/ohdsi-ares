@@ -12,6 +12,6 @@ sudo docker run --rm -d \
     edence/ohdsi-ares:latest
 ```
 
-The data extracts for each data source can be generated following the instructions here: [ares github docs](https://github.com/OHDSI/Ares/blob/main/docs/index.md)
+The data extracts for each data source and for networkwide metadata can be generated using the `edence/ohdsi-aresindexer` image created in an adjacent repository: [ohdsi-aresindexer](https://github.com/edencehealth/ohdsi-aresindexer)
 
 Good luck!
