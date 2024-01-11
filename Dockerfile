@@ -1,21 +1,32 @@
-FROM python:3-bullseye as builder
+FROM node:18 as builder
 
-RUN apt-get update && apt-get install -y \
-    npm \
-    git \
-    make \
-    g++
+ARG AG="apt-get -yq --no-install-recommends"
+RUN set -eux; \
+  $AG update; \
+  $AG install \
+    build-essential \
+    g++ \
+  ;
 
-RUN git clone https://github.com/ohdsi/ares
+ARG GIT_REF=""
 
-RUN cd /ares
+WORKDIR /build
+RUN set -eux; \
+  git clone https://github.com/ohdsi/ares /build; \
+  if [ -n "$GIT_REF" ]; then git checkout "${GIT_REF}"; fi; \
+  :
 
-WORKDIR /ares
-RUN npm install && npm run build && true
+RUN npm install
+RUN npm run build
 
-FROM nginx:1.22-alpine as server
-LABEL maintainer="edenceHealth ohdsi-containers <https://edence.health/>"
+FROM nginxinc/nginx-unprivileged:1-alpine
+LABEL maintainer="edenceHealth NV <info@edence.health>"
 
-COPY --from=builder /ares/dist/ /usr/share/nginx/html/ares
-COPY --from=builder /ares/dist/ /usr/share/nginx/html
-COPY --from=builder /ares/dist/ /ares
+COPY --from=builder /build/dist /usr/share/nginx/html/ares
+# the nginx user doesn't have permission to modify the default index file
+USER root
+RUN set -eux; \
+  INDEX="/usr/share/nginx/html/index.html"; \
+  rm "$INDEX"; \
+  ln -s ares/index.html "$INDEX";
+USER nginx
