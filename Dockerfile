@@ -1,4 +1,4 @@
-FROM node:22.4 AS builder
+FROM node:22 AS builder
 
 ARG AG="apt-get -yq --no-install-recommends"
 ARG DEBIAN_FRONTEND="noninteractive"
