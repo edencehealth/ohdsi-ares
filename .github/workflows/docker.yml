@@ -1,9 +1,10 @@
 name: Docker
 
 "on":
-  push:
+  pull_request:
     branches:
       - main
+  push:
     tags:
       - '*.*.*'
 
@@ -13,5 +14,5 @@ jobs:
     uses: edencehealth/workflows/.github/workflows/dockerimage.yml@v1
     with:
       container_name: ohdsi-ares
-      platforms: linux/amd64
+      push_readme: README.md
     secrets: inherit

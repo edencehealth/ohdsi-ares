@@ -1,21 +1,33 @@
-FROM python:3-bullseye as builder
+FROM node:22 AS builder
 
-RUN apt-get update && apt-get install -y \
-    npm \
-    git \
-    make \
-    g++
+ARG AG="apt-get -yq --no-install-recommends"
+ARG DEBIAN_FRONTEND="noninteractive"
 
-RUN git clone https://github.com/ohdsi/ares
+RUN set -eux; \
+  $AG update; \
+  $AG install \
+    build-essential \
+    g++ \
+  ;
 
-RUN cd /ares
+WORKDIR /build
 
-WORKDIR /ares
-RUN npm install && npm run build && true
+ARG GIT_REF="development"
+RUN set -eux; \
+  git clone https://github.com/ohdsi/ares.git /build; \
+  if [ -n "$GIT_REF" ]; then git checkout "${GIT_REF}"; fi;
 
-FROM nginx:1.22-alpine as server
-LABEL maintainer="edenceHealth ohdsi-containers <https://edence.health/>"
+ARG NODE_OPTIONS="--max_old_space_size=4096"
+RUN set -eux; \
+  npm install; \
+  npm run build; \
+  ln -s /data/ares dist/data;
 
-COPY --from=builder /ares/dist/ /usr/share/nginx/html/ares
-COPY --from=builder /ares/dist/ /usr/share/nginx/html
-COPY --from=builder /ares/dist/ /ares
+FROM nginxinc/nginx-unprivileged:1-alpine
+LABEL maintainer="edenceHealth NV <info@edence.health>"
+
+COPY --from=builder /build/dist /usr/share/nginx/html/ares
+COPY --from=builder /build/dist/index.html /usr/share/nginx/html/
+COPY env/ /usr/share/nginx/html/env/
+COPY env/ /usr/share/nginx/html/ares/env/
+VOLUME /data
