@@ -12,7 +12,7 @@ RUN set -eux; \
 
 WORKDIR /build
 
-ARG GIT_REF="development"
+ARG GIT_REF=""
 RUN set -eux; \
   git clone https://github.com/ohdsi/ares.git /build; \
   if [ -n "$GIT_REF" ]; then git checkout "${GIT_REF}"; fi;
