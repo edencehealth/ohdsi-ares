@@ -1,7 +1,7 @@
 export default { getEnvJSON };
 
 // NOTE: if you want to refer to a runtime environment variable via process.env,
-// make sure you include it in the list in load_njs.sh
+// make sure you include it in the list in 50-load_njs.sh
 
 function getEnvJSON(r) {
     // this function is meant to dynamically produce a document like the following file:
