@@ -10,12 +10,11 @@ RUN set -eux; \
     g++ \
   ;
 
-WORKDIR /build
-
 ARG GIT_REF=""
 RUN set -eux; \
   git clone https://github.com/ohdsi/ares.git /build; \
   if [ -n "$GIT_REF" ]; then git checkout "${GIT_REF}"; fi;
+WORKDIR /build
 
 ARG NODE_OPTIONS="--max_old_space_size=4096"
 RUN set -eux; \
@@ -26,8 +25,11 @@ RUN set -eux; \
 FROM nginxinc/nginx-unprivileged:1-alpine
 LABEL maintainer="edenceHealth NV <info@edence.health>"
 
+COPY nginx-cfg/??-* /docker-entrypoint.d/
+COPY nginx-cfg/env* /etc/nginx/
+
 COPY --from=builder /build/dist /usr/share/nginx/html/ares
 COPY --from=builder /build/dist/index.html /usr/share/nginx/html/
-COPY env/ /usr/share/nginx/html/env/
-COPY env/ /usr/share/nginx/html/ares/env/
+
+# NOTE: the web path "/ares/data" is symlinked to the container path "/data/ares"
 VOLUME /data
