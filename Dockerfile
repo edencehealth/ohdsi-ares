@@ -10,11 +10,12 @@ RUN set -eux; \
     g++ \
   ;
 
+WORKDIR /build
+
 ARG GIT_REF=""
 RUN set -eux; \
   git clone https://github.com/ohdsi/ares.git /build; \
   if [ -n "$GIT_REF" ]; then git checkout "${GIT_REF}"; fi;
-WORKDIR /build
 
 ARG NODE_OPTIONS="--max_old_space_size=4096"
 RUN set -eux; \
