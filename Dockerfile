@@ -26,8 +26,11 @@ RUN set -eux; \
 FROM nginxinc/nginx-unprivileged:1-alpine
 LABEL maintainer="edenceHealth NV <info@edence.health>"
 
+COPY nginx-cfg/??-* /docker-entrypoint.d/
+COPY nginx-cfg/env* /etc/nginx/
+
 COPY --from=builder /build/dist /usr/share/nginx/html/ares
 COPY --from=builder /build/dist/index.html /usr/share/nginx/html/
-COPY env/ /usr/share/nginx/html/env/
-COPY env/ /usr/share/nginx/html/ares/env/
+
+# NOTE: the web path "/ares/data" is symlinked to the container path "/data/ares"
 VOLUME /data

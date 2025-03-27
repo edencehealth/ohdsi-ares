@@ -1,13 +1,16 @@
 **/*.env
 **/.env
 **/.env.*
+**/.idea
 **/.mypy_cache
 **/.venv
 **/.vscode
-**/.idea
 **/venv
 .git
+.gitattributes
 .github
 .gitignore
 .pre-commit-config.yaml
 .yamllint.yaml
+.yamllint.yml
+README.md
