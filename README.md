@@ -11,7 +11,7 @@ Some general notes:
 * runs non-root: `uid=101(nginx) gid=101(nginx) groups=101(nginx)`
 * the Ares app is installed in the document root `/usr/share/nginx/html`
 * listens on port `8080`, can be used with a path-prefix of `/ares`
-* Ares data should be mounted to the `/data` volume and placed at ``/data/ares`
+* Ares data should be mounted to the `/data` volume and placed at `/data/ares`
 * Ares data can be generated using the [ohdsi-aresindexer](https://github.com/edencehealth/ohdsi-aresindexer) image
 
 
@@ -24,4 +24,21 @@ docker run \
   --publish 8080:8080 \
   --volume "$(pwd)/data:/data" \
   edence/ohdsi-ares:latest
+```
+
+A compose service implementation might look like:
+
+```yaml
+services:
+  ares:
+    image: edence/ohdsi-ares:1
+    environment:
+      WEB_API_URL: "./"
+      WEB_API_ENABLED": false
+      DUCKDB_ENABLED": false
+      CDM_NETWORK_NAME": ""
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./data:/data:ro"
 ```
